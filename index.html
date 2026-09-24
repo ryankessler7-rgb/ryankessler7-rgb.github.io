@@ -35,21 +35,13 @@ a{color:inherit}
 
 /* ───────── ambient background (behind everything below the hero) ───────── */
 .ambient{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
-.ambient .mesh{position:absolute;inset:-60px;
-  background-image:linear-gradient(rgba(120,150,235,.10) 1px,transparent 1px),linear-gradient(90deg,rgba(120,150,235,.10) 1px,transparent 1px);
-  background-size:46px 46px;animation:meshpan 4.5s linear infinite;
-  -webkit-mask-image:radial-gradient(ellipse 100% 78% at 50% 42%,#000,transparent 92%);mask-image:radial-gradient(ellipse 100% 78% at 50% 42%,#000,transparent 92%)}
-.ambient .blob{position:absolute;border-radius:50%;filter:blur(64px)}
-.ambient .b1{width:52vw;height:52vw;left:-12vw;top:6vh;background:radial-gradient(circle,rgba(124,58,237,.30),transparent 60%);animation:drift1 16s ease-in-out infinite alternate}
-.ambient .b2{width:46vw;height:46vw;right:-10vw;top:46vh;background:radial-gradient(circle,rgba(16,150,220,.28),transparent 60%);animation:drift2 20s ease-in-out infinite alternate}
-.ambient .streams{position:absolute;inset:0;
-  -webkit-mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent);mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent)}
-.ambient .st{position:absolute;top:0;width:1px;background:linear-gradient(rgba(94,234,245,0),var(--sc,rgba(94,234,245,.6)) 60%,rgba(255,255,255,.7));
-  filter:drop-shadow(0 0 5px var(--sc,rgba(94,234,245,.6)));animation:fall linear infinite;will-change:transform}
-@keyframes meshpan{to{background-position:46px 46px}}
+.bgcanvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.ambient .blob{position:absolute;border-radius:50%;filter:blur(66px)}
+.ambient .b1{width:52vw;height:52vw;left:-12vw;top:4vh;background:radial-gradient(circle,rgba(124,58,237,.30),transparent 60%);animation:drift1 17s ease-in-out infinite alternate}
+.ambient .b2{width:46vw;height:46vw;right:-10vw;top:46vh;background:radial-gradient(circle,rgba(16,150,220,.28),transparent 60%);animation:drift2 21s ease-in-out infinite alternate}
+.ambient .b3{width:38vw;height:38vw;left:30vw;top:82vh;background:radial-gradient(circle,rgba(94,234,245,.16),transparent 62%);animation:drift1 25s ease-in-out infinite alternate-reverse}
 @keyframes drift1{to{transform:translate(90px,64px) scale(1.22)}}
 @keyframes drift2{to{transform:translate(-76px,-48px) scale(1.16)}}
-@keyframes fall{0%{transform:translateY(-26vh)}100%{transform:translateY(128vh)}}
 .hero{z-index:2}
 main,footer{position:relative;z-index:1}
 
@@ -276,7 +268,7 @@ footer .wrap{display:flex;justify-content:space-between;gap:12px 24px;flex-wrap:
 </head>
 <body>
 
-<div class="ambient" aria-hidden="true"><div class="mesh"></div><div class="blob b1"></div><div class="blob b2"></div><div class="streams"></div></div>
+<div class="ambient" aria-hidden="true"><div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div><canvas id="bg" class="bgcanvas"></canvas></div>
 
 <header class="hero" id="top">
   <canvas id="scene" aria-hidden="true"></canvas>
@@ -482,7 +474,7 @@ footer .wrap{display:flex;justify-content:space-between;gap:12px 24px;flex-wrap:
     <div class="wrap">
       <p class="kicker">Digital forensics</p>
       <h2>Collect it before it's gone.</h2>
-      <p class="intro">Evidence has a shelf life. The order of volatility (RFC 3227) dictates what a responder captures first. You image the things that vanish on reboot before you ever touch the disk.</p>
+      <p class="intro">Some evidence is gone the instant a machine powers off. The order of volatility (RFC 3227) sets the capture sequence, from the most fleeting data down to the most durable, so a live system's memory is preserved long before anyone images the disk.</p>
       <div class="dfir">
         <ol class="vol glass">
           <li><span class="rank">1</span><span class="name">CPU registers &amp; cache</span><span class="life">nanoseconds</span></li>
@@ -524,22 +516,61 @@ const cv = document.getElementById("scene");
 const ctx = cv.getContext("2d");
 const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-// falling data streams in the ambient background
+// drifting network constellation in the ambient background
 (() => {
-  const box = document.querySelector(".ambient .streams");
-  if (!box) return;
-  const cols = ["rgba(94,234,245,.6)", "rgba(157,124,255,.55)", "rgba(94,234,245,.45)", "rgba(120,200,255,.5)"];
-  const n = Math.max(10, Math.min(22, Math.round(innerWidth / 70)));
-  for (let i = 0; i < n; i++){
-    const s = document.createElement("span");
-    s.className = "st";
-    s.style.left = (Math.random() * 100).toFixed(2) + "%";
-    s.style.height = (12 + Math.random() * 20).toFixed(0) + "vh";
-    s.style.setProperty("--sc", cols[i % cols.length]);
-    s.style.animationDuration = (4.5 + Math.random() * 6).toFixed(2) + "s";
-    s.style.animationDelay = (-Math.random() * 11).toFixed(2) + "s";
-    box.appendChild(s);
+  const c = document.getElementById("bg");
+  if (!c) return;
+  const x = c.getContext("2d");
+  let w = 0, h = 0, dpr = 1, nodes = [], D = 130, braf = 0;
+  function size(){
+    dpr = Math.min(2, window.devicePixelRatio || 1);
+    w = window.innerWidth; h = window.innerHeight;
+    c.width = Math.round(w * dpr); c.height = Math.round(h * dpr);
+    x.setTransform(dpr, 0, 0, dpr, 0, 0);
+    D = Math.max(120, Math.min(175, w / 9));
+    const n = Math.round(Math.min(82, w * h / 19000));
+    nodes = Array.from({ length: n }, () => ({
+      x: Math.random() * w, y: Math.random() * h,
+      vx: (Math.random() - .5) * .28, vy: (Math.random() - .5) * .28,
+      r: Math.random() * 1.9 + 1.3, v: Math.random() < .34
+    }));
   }
+  function render(){
+    x.clearRect(0, 0, w, h);
+    for (let i = 0; i < nodes.length; i++){
+      const a = nodes[i];
+      for (let j = i + 1; j < nodes.length; j++){
+        const b = nodes[j], dx = a.x - b.x, dy = a.y - b.y, d2 = dx*dx + dy*dy;
+        if (d2 < D * D){
+          const al = (1 - Math.sqrt(d2) / D) * .45;
+          x.strokeStyle = `rgba(130,210,255,${al.toFixed(3)})`;
+          x.lineWidth = 1.1;
+          x.beginPath(); x.moveTo(a.x, a.y); x.lineTo(b.x, b.y); x.stroke();
+        }
+      }
+    }
+    x.shadowBlur = 7;
+    for (const p of nodes){
+      x.shadowColor = p.v ? "rgba(157,124,255,.9)" : "rgba(94,234,245,.9)";
+      x.fillStyle = p.v ? "rgba(190,170,255,.95)" : "rgba(150,245,255,.9)";
+      x.beginPath(); x.arc(p.x, p.y, p.r, 0, Math.PI * 2); x.fill();
+    }
+    x.shadowBlur = 0;
+  }
+  function step(){
+    for (const p of nodes){
+      p.x += p.vx; p.y += p.vy;
+      if (p.x < -24) p.x = w + 24; else if (p.x > w + 24) p.x = -24;
+      if (p.y < -24) p.y = h + 24; else if (p.y > h + 24) p.y = -24;
+    }
+    render();
+    braf = document.hidden ? 0 : requestAnimationFrame(step);
+  }
+  function go(){ if (!braf && !reduce){ braf = requestAnimationFrame(step); } }
+  size(); render();
+  window.addEventListener("resize", () => { size(); if (reduce) render(); });
+  document.addEventListener("visibilitychange", () => { if (!document.hidden) go(); });
+  if (!reduce) go();
 })();
 
 let W = 0, H = 0, DPR = 1, R = 100, CX = 0, CY = 0, S = 155, D = 520, SR = 160, SC = 1;
@@ -966,11 +997,14 @@ function decode(el){
 }
 
 /* ───────── loop ───────── */
-let raf = 0, last = 0, visible = true, booted = false;
+// The simulation runs continuously while the tab is visible, so the scene never
+// freezes as you scroll. Only the (expensive) draw is skipped while the hero is
+// off-screen, so scrolling back shows motion that has kept advancing.
+let raf = 0, last = 0, inView = true, booted = false;
 function frame(now){
   const dt = Math.min(.05, (now - last)/1000 || 0); last = now;
-  try { update(dt); draw(); hud(dt); } catch (e) { console.error(e); }
-  raf = visible && !document.hidden ? requestAnimationFrame(frame) : 0;
+  try { update(dt); if (inView) draw(); hud(dt); } catch (e) { console.error(e); }
+  raf = !document.hidden ? requestAnimationFrame(frame) : 0;
 }
 function start(){ if (booted && !raf && !reduce){ last = performance.now(); raf = requestAnimationFrame(frame); } }
 
@@ -989,7 +1023,7 @@ addEventListener("pointermove", e => {
   tiltT = -.32 + (e.clientY/innerHeight - .5)*.3;
   yawT = (e.clientX/innerWidth - .5)*.6;
 }, { passive: true });
-new IntersectionObserver(([e]) => { visible = e.isIntersecting; if (visible) start(); }).observe(cv);
+new IntersectionObserver(([e]) => { inView = e.isIntersecting; }, { rootMargin: "120px" }).observe(cv);
 document.addEventListener("visibilitychange", () => { if (!document.hidden) start(); });
 
 boot();
