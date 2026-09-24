@@ -74,6 +74,14 @@ nav{grid-column:1/-1;display:flex;align-items:center;justify-content:space-betwe
 .feed-head{display:flex;justify-content:space-between;align-items:center;padding:0 16px 10px;border-bottom:1px solid var(--line);
   font:500 11px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
 .feed-head b{color:var(--cyan);font-weight:500}
+.eqbars{display:inline-flex;align-items:flex-end;gap:3px;height:14px}
+.eqbars i{width:3px;height:35%;border-radius:2px;background:var(--cyan);box-shadow:0 0 6px var(--cyan);opacity:.9;animation:eqb 1.1s ease-in-out infinite}
+.eqbars i:nth-child(1){animation-delay:-.15s}
+.eqbars i:nth-child(2){animation-delay:-.55s}
+.eqbars i:nth-child(3){animation-delay:-.9s}
+.eqbars i:nth-child(4){animation-delay:-.35s}
+.eqbars i:nth-child(5){animation-delay:-.7s}
+@keyframes eqb{0%,100%{height:22%}50%{height:100%}}
 #feed{list-style:none;margin:0;padding:4px 0 0;height:318px;overflow:hidden}
 #feed li{display:grid;grid-template-columns:auto 1fr;gap:1px 10px;padding:8px 16px;font:12px/1.45 var(--mono);border-bottom:1px solid rgba(140,160,220,.07);
   animation:feedin .45s cubic-bezier(.2,.8,.2,1)}
@@ -174,20 +182,29 @@ h2{font:600 clamp(28px,3.8vw,46px)/1.08 var(--display);letter-spacing:-.035em;ma
 .chip.h{color:var(--amber);border-color:rgba(255,176,72,.4);background:rgba(255,176,72,.1)}
 .chip.m{color:var(--cyan);border-color:rgba(94,234,245,.35);background:rgba(94,234,245,.08)}
 
-/* ── malware dossiers (distinct from threat cards) ── */
-.dossiers{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:14px}
-.dos{border:1px solid var(--line);border-radius:14px;overflow:hidden;background:rgba(8,10,19,.66);position:relative;transition:transform .2s,border-color .2s}
-.dos::after{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--sv);box-shadow:0 0 14px -1px var(--sv)}
-.dos:hover{transform:translateY(-2px);border-color:var(--line-2)}
-.dos .hd{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:13px 16px;border-bottom:1px solid var(--line);background:linear-gradient(90deg,color-mix(in srgb,var(--sv) 13%,transparent),transparent 72%)}
-.dos .hl{display:flex;flex-direction:column;gap:5px}
+/* ── malware dossiers (sleek, distinct from threat cards) ── */
+.dossiers{display:grid;grid-template-columns:repeat(auto-fill,minmax(332px,1fr));gap:16px}
+.dos{position:relative;border-radius:16px;overflow:hidden;background:rgba(10,13,24,.62);border:1px solid var(--line);
+  display:flex;flex-direction:column;transition:transform .25s,border-color .25s,box-shadow .25s}
+.dos::before{content:"";position:absolute;left:0;top:0;bottom:0;width:2px;z-index:2;
+  background:linear-gradient(180deg,transparent,var(--sv),#eafcff,var(--sv),transparent);background-size:100% 260%;animation:irflow 3.2s linear infinite}
+.dos::after{content:"";position:absolute;width:160px;height:160px;right:-56px;top:-64px;border-radius:50%;pointer-events:none;
+  background:radial-gradient(circle,color-mix(in srgb,var(--sv) 24%,transparent),transparent 70%);opacity:.5;transition:opacity .3s}
+.dos:hover{transform:translateY(-4px);border-color:color-mix(in srgb,var(--sv) 45%,var(--line));box-shadow:0 20px 50px -24px var(--sv)}
+.dos:hover::after{opacity:.9}
+.dos > *{position:relative;z-index:1}
+.dos .hd{display:flex;align-items:center;gap:13px;padding:18px 18px 14px}
+.dico{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;color:var(--sv);flex:none;
+  border:1px solid color-mix(in srgb,var(--sv) 40%,var(--line));background:color-mix(in srgb,var(--sv) 12%,transparent)}
+.dos .hl{display:flex;flex-direction:column;gap:4px;min-width:0}
 .dos .id{font:500 10px/1 var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--sv)}
-.dos h3{font:600 18px/1 var(--display);margin:0;letter-spacing:-.01em}
-.dos .sev{font:600 10px/1 var(--mono);letter-spacing:.11em;text-transform:uppercase;color:var(--sv);white-space:nowrap}
-.dos .sev::before{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--sv);box-shadow:0 0 8px var(--sv);margin-right:7px;vertical-align:middle;animation:blink 1.5s steps(2,start) infinite}
-.dos .bd{padding:15px 16px 16px}
-.dos .bd > p{margin:0 0 13px;color:var(--muted);font-size:13.5px;line-height:1.5}
-.dos .kv{display:grid;grid-template-columns:auto minmax(0,1fr);gap:8px 12px;font:12px/1.5 var(--mono)}
+.dos h3{font:600 17px/1.05 var(--display);margin:0;letter-spacing:-.01em}
+.dos .sev{margin-left:auto;display:inline-flex;align-items:center;gap:7px;flex:none;white-space:nowrap;
+  font:600 10px/1 var(--mono);letter-spacing:.11em;text-transform:uppercase;color:var(--sv)}
+.dos .sev::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--sv);box-shadow:0 0 8px var(--sv);animation:blink 1.5s steps(2,start) infinite}
+.dos .bd{padding:0 18px 18px;display:flex;flex-direction:column;flex:1}
+.dos .bd > p{margin:0 0 14px;color:var(--muted);font-size:13.5px;line-height:1.55}
+.dos .kv{margin-top:auto;padding-top:13px;border-top:1px solid var(--line);display:grid;grid-template-columns:auto minmax(0,1fr);gap:9px 12px;font:12px/1.5 var(--mono)}
 .dos .kv b{font:500 10px/1.6 var(--mono);letter-spacing:.08em;text-transform:uppercase;font-weight:500}
 .dos .kv b.s{color:var(--amber)}
 .dos .kv b.c{color:var(--cyan)}
@@ -292,14 +309,14 @@ footer .wrap{display:flex;justify-content:space-between;gap:12px 24px;flex-wrap:
     </nav>
 
     <aside class="feed glass" aria-label="Event stream (simulated)">
-      <div class="feed-head"><span>Event stream</span><b id="rate">0 / s</b></div>
+      <div class="feed-head"><span>Event stream</span><span class="eqbars" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span></div>
       <ol id="feed" aria-live="off"></ol>
     </aside>
 
     <div class="copy">
-      <p class="eyebrow" id="eyebrow" aria-label="Network defense, rendered live">Network defense, rendered live</p>
+      <p class="eyebrow" id="eyebrow" aria-label="An interactive guide to cyber defense">An interactive guide to cyber defense</p>
       <h1><span class="w" style="animation-delay:.05s">Every</span> <span class="w" style="animation-delay:.12s">flash</span> <span class="w" style="animation-delay:.19s">is</span> <span class="w" style="animation-delay:.26s">an</span> <span class="w" style="animation-delay:.33s"><em>attack</em></span> <span class="w" style="animation-delay:.40s">that</span> <span class="w" style="animation-delay:.47s">didn’t</span> <span class="w" style="animation-delay:.54s">land.</span></h1>
-      <p class="lede">Security operations, made visible. How a network gets <span class="r">attacked</span>, how those attacks get <span class="c">caught</span>, and what happens when one slips past.</p>
+      <p class="lede">A visual walkthrough of how modern networks are defended: the <span class="c">vulnerabilities</span> attackers exploit, the malware they deploy, the tools that <span class="c">detect</span> threats, and the process teams follow when an <span class="r">incident</span> gets through. Scroll to explore each layer.</p>
     </div>
 
     <div class="hud glass" role="group" aria-label="Live counters (simulated)">
@@ -332,37 +349,37 @@ footer .wrap{display:flex;justify-content:space-between;gap:12px 24px;flex-wrap:
     <div class="wrap">
       <p class="kicker">Malicious software</p>
       <h2>Know the family, know the fix.</h2>
-      <p class="intro">Malware isn't one thing. Each family behaves differently on a host and on the wire, which means each leaves a different fingerprint and calls for a different containment move.</p>
+      <p class="intro">Malware is a broad label for many kinds of malicious code. Each family has a distinct goal and behavior, so each shows up differently in monitoring and calls for a different response. These six are among the most common a defender will encounter.</p>
       <div class="dossiers">
         <article class="dos" style="--sv:var(--red)">
-          <div class="hd"><div class="hl"><span class="id">MAL-01</span><h3>Ransomware</h3></div><span class="sev">Critical</span></div>
-          <div class="bd"><p>Encrypts files and demands payment. Modern strains steal data first, then threaten to leak it, which is double extortion.</p>
-            <div class="kv"><b class="s">Signal</b><span>Mass file-rename bursts, shadow-copy deletion, spikes in encryption activity.</span><b class="c">Contain</b><span>Isolate host, disable accounts, restore from offline backups.</span></div></div>
+          <div class="hd"><span class="dico"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="10.5" width="14" height="9.5" rx="2"/><path d="M8 10.5V7a4 4 0 0 1 8 0v3.5"/></svg></span><div class="hl"><span class="id">MAL-01</span><h3>Ransomware</h3></div><span class="sev">Critical</span></div>
+          <div class="bd"><p>Encrypts a victim's files and demands payment for the key. Modern strains also steal the data first and threaten to publish it, a tactic called double extortion.</p>
+            <div class="kv"><b class="s">Detected by</b><span>Mass file-rename bursts, deletion of backups, sudden spikes in encryption activity.</span><b class="c">Response</b><span>Isolate the host, disable accounts, restore from offline backups.</span></div></div>
         </article>
         <article class="dos" style="--sv:var(--amber)">
-          <div class="hd"><div class="hl"><span class="id">MAL-02</span><h3>Trojan / Loader</h3></div><span class="sev">High</span></div>
-          <div class="bd"><p>Poses as legitimate software to gain a foothold, then quietly pulls down heavier payloads.</p>
-            <div class="kv"><b class="s">Signal</b><span>Unexpected child processes, first-seen outbound domains.</span><b class="c">Contain</b><span>Quarantine the binary, block command-and-control, hunt for persistence.</span></div></div>
+          <div class="hd"><span class="dico"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 4 7v10l8 4 8-4V7Z"/><path d="M4 7l8 4 8-4M12 11v10"/></svg></span><div class="hl"><span class="id">MAL-02</span><h3>Trojan / Loader</h3></div><span class="sev">High</span></div>
+          <div class="bd"><p>Disguises itself as legitimate software to gain a foothold, then quietly downloads heavier payloads onto the machine.</p>
+            <div class="kv"><b class="s">Detected by</b><span>Unexpected child processes and connections to never-before-seen domains.</span><b class="c">Response</b><span>Quarantine the file, block its command server, hunt for persistence.</span></div></div>
         </article>
         <article class="dos" style="--sv:var(--amber)">
-          <div class="hd"><div class="hl"><span class="id">MAL-03</span><h3>Worm</h3></div><span class="sev">High</span></div>
-          <div class="bd"><p>Self-propagates across the network by abusing a vulnerability, with no user action needed to spread.</p>
-            <div class="kv"><b class="s">Signal</b><span>Lateral SMB/RDP spikes, identical processes across many hosts.</span><b class="c">Contain</b><span>Segment the network, patch the exploited service, close the port.</span></div></div>
+          <div class="hd"><span class="dico"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="12" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="18" cy="18" r="2"/><path d="M7.8 11.1 16.2 6.9M7.8 12.9l8.4 4.2"/></svg></span><div class="hl"><span class="id">MAL-03</span><h3>Worm</h3></div><span class="sev">High</span></div>
+          <div class="bd"><p>Spreads itself across a network by exploiting a vulnerability, copying from machine to machine with no user action required.</p>
+            <div class="kv"><b class="s">Detected by</b><span>Bursts of internal SMB/RDP traffic and identical processes on many hosts.</span><b class="c">Response</b><span>Segment the network, patch the exploited service, close the port.</span></div></div>
         </article>
         <article class="dos" style="--sv:var(--red)">
-          <div class="hd"><div class="hl"><span class="id">MAL-04</span><h3>Rootkit</h3></div><span class="sev">Critical</span></div>
-          <div class="bd"><p>Hides in the kernel or firmware to survive reboots and stay invisible to normal tools.</p>
-            <div class="kv"><b class="s">Signal</b><span>Integrity-check mismatches, hidden processes, unsigned drivers.</span><b class="c">Contain</b><span>Offline forensic imaging, then rebuild from known-good media.</span></div></div>
+          <div class="hd"><span class="dico"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3l18 18"/><path d="M10.6 10.7a2 2 0 0 0 2.7 2.7"/><path d="M6.9 6.9C4.8 8.2 3 12 3 12s3.5 6 9 6c1.3 0 2.5-.3 3.6-.8M9.8 5.2A9.7 9.7 0 0 1 12 5c5.5 0 9 6 9 6a16 16 0 0 1-1.6 2.4"/></svg></span><div class="hl"><span class="id">MAL-04</span><h3>Rootkit</h3></div><span class="sev">Critical</span></div>
+          <div class="bd"><p>Buries itself in the operating system kernel or firmware to survive reboots and stay hidden from normal security tools.</p>
+            <div class="kv"><b class="s">Detected by</b><span>Integrity-check mismatches, hidden processes, unsigned drivers.</span><b class="c">Response</b><span>Image the disk offline, then rebuild from known-good media.</span></div></div>
         </article>
         <article class="dos" style="--sv:var(--amber)">
-          <div class="hd"><div class="hl"><span class="id">MAL-05</span><h3>Infostealer</h3></div><span class="sev">High</span></div>
-          <div class="bd"><p>Harvests saved credentials, session cookies, and keystrokes and ships them back to the operator.</p>
-            <div class="kv"><b class="s">Signal</b><span>Access to browser credential stores, large outbound uploads.</span><b class="c">Contain</b><span>Force credential rotation, revoke active session tokens.</span></div></div>
+          <div class="hd"><span class="dico"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V9M8 13l4-4 4 4"/><path d="M6 4.5h12"/></svg></span><div class="hl"><span class="id">MAL-05</span><h3>Infostealer</h3></div><span class="sev">High</span></div>
+          <div class="bd"><p>Harvests saved passwords, session cookies, and keystrokes from a machine and sends them back to the attacker.</p>
+            <div class="kv"><b class="s">Detected by</b><span>Access to browser credential stores and large outbound uploads.</span><b class="c">Response</b><span>Force a password reset, revoke active session tokens.</span></div></div>
         </article>
         <article class="dos" style="--sv:var(--cyan)">
-          <div class="hd"><div class="hl"><span class="id">MAL-06</span><h3>Botnet Agent</h3></div><span class="sev">Medium</span></div>
-          <div class="bd"><p>Enrolls the host into a remote-controlled network used for DDoS, spam, or proxying.</p>
-            <div class="kv"><b class="s">Signal</b><span>Beaconing at fixed intervals to known infrastructure.</span><b class="c">Contain</b><span>Sinkhole the domain, remove the agent, block egress.</span></div></div>
+          <div class="hd"><span class="dico"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="2.4"/><circle cx="5" cy="6" r="1.6"/><circle cx="19" cy="6" r="1.6"/><circle cx="5" cy="18" r="1.6"/><circle cx="19" cy="18" r="1.6"/><path d="M10.2 10.6 6.2 7.2M13.8 10.6l4-3.4M10.2 13.4 6.2 16.8M13.8 13.4l4 3.4"/></svg></span><div class="hl"><span class="id">MAL-06</span><h3>Botnet Agent</h3></div><span class="sev">Medium</span></div>
+          <div class="bd"><p>Quietly enrolls a machine into a remote-controlled network of infected devices, used for attacks like DDoS, spam, or proxying.</p>
+            <div class="kv"><b class="s">Detected by</b><span>Regular beaconing to known command-and-control infrastructure.</span><b class="c">Response</b><span>Sinkhole the domain, remove the agent, block outbound traffic.</span></div></div>
         </article>
       </div>
     </div>
@@ -458,7 +475,7 @@ footer .wrap{display:flex;justify-content:space-between;gap:12px 24px;flex-wrap:
     <div class="wrap">
       <p class="kicker">Incident response</p>
       <h2>When something gets through.</h2>
-      <p class="intro">Detection is the start, not the end. This is the six-phase lifecycle (NIST 800-61 / SANS) that turns a 3 a.m. alert into a closed, documented case. Calm, sequenced, evidence-first.</p>
+      <p class="intro">When a threat makes it past the defenses, security teams follow a structured process to limit the damage and recover. These are the six phases of the incident response lifecycle, as defined by NIST and the SANS Institute.</p>
       <div class="ir">
         <div class="s" style="--i:1"><div class="no">01</div><h3>Preparation</h3><p>Build the plan, tooling, and runbooks before anything happens. Everyone knows their role.</p></div>
         <div class="s" style="--i:2"><div class="no">02</div><h3>Identification</h3><p>Detect and confirm the incident, then scope it: which hosts, accounts, and data are touched?</p></div>
@@ -474,7 +491,7 @@ footer .wrap{display:flex;justify-content:space-between;gap:12px 24px;flex-wrap:
     <div class="wrap">
       <p class="kicker">Digital forensics</p>
       <h2>Collect it before it's gone.</h2>
-      <p class="intro">Some evidence is gone the instant a machine powers off. The order of volatility (RFC 3227) sets the capture sequence, from the most fleeting data down to the most durable, so a live system's memory is preserved long before anyone images the disk.</p>
+      <p class="intro">Some evidence disappears the instant a machine is powered off, so investigators collect it in a set order, called the order of volatility. The most fleeting data comes first, from memory and live network connections down to disks and long-term backups, so nothing critical is lost.</p>
       <div class="dfir">
         <ol class="vol glass">
           <li><span class="rank">1</span><span class="name">CPU registers &amp; cache</span><span class="life">nanoseconds</span></li>
@@ -601,7 +618,7 @@ function blit(sp, x, y, size, a){
 }
 
 /* ───────── geometry ───────── */
-const N = 1100, GA = Math.PI * (3 - Math.sqrt(5));
+const N = 820, GA = Math.PI * (3 - Math.sqrt(5));
 const pts = [];
 for (let i = 0; i < N; i++){
   const y = 1 - (i/(N-1))*2, r = Math.sqrt(1-y*y), th = i*GA;
@@ -628,7 +645,7 @@ const links = [];
   }
 }
 const shieldNodes = [];
-for (let i = 0, M = 320; i < M; i++){
+for (let i = 0, M = 220; i < M; i++){
   const y = 1 - (i/(M-1))*2, r = Math.sqrt(1-y*y), th = i*GA;
   shieldNodes.push({ n: [Math.cos(th)*r, y, Math.sin(th)*r], g: 0 });
 }
@@ -643,7 +660,7 @@ function resize(){
   const b = cv.getBoundingClientRect();
   if (!(b.width > 0 && b.height > 0)) return;
   W = b.width; H = b.height;
-  DPR = Math.min(2, window.devicePixelRatio || 1);
+  DPR = Math.min(1.6, window.devicePixelRatio || 1);
   cv.width = Math.round(W*DPR); cv.height = Math.round(H*DPR);
   const narrow = W < 860;
   R  = narrow ? Math.min(W*.22, H*.15) : Math.min(W*.18, H*.25);
@@ -727,7 +744,7 @@ function impact(th){
   shieldPulse = Math.min(.22, shieldPulse + .05);
   stats.blocked += Math.round(rand(38, 190));
   recent.push(t);
-  if (t - lastFeed > .5){ lastFeed = t; addFeed(); }
+  if (t - lastFeed > .85){ lastFeed = t; addFeed(); }
 }
 function coreHit(th){
   const n = norm(th.p);
@@ -978,10 +995,9 @@ function hud(dt){
     const bar = $("lvlbar"); bar.style.width = w + "%"; bar.style.setProperty("--lc", col);
   }
 
-  slowT -= .5; if (slowT <= 0){          // latency + rate refresh slowly, no per-frame jitter
+  slowT -= .5; if (slowT <= 0){          // latency refreshes slowly, no per-frame jitter
     slowT = 2;
     $("c-lat").textContent = (3.5 + Math.random()*.7 + (wave ? 1.2 : 0)).toFixed(1);
-    $("rate").textContent = `${Math.round(rate)} / s`;
   }
 }
 
