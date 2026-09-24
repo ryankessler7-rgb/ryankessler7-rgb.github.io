@@ -33,6 +33,24 @@ body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.6 var(--body);-w
 a{color:inherit}
 :focus-visible{outline:2px solid var(--cyan);outline-offset:3px;border-radius:6px}
 
+/* ───────── ambient background (behind everything below the hero) ───────── */
+.ambient{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.ambient .mesh{position:absolute;inset:-60px;
+  background-image:linear-gradient(rgba(140,160,220,.055) 1px,transparent 1px),linear-gradient(90deg,rgba(140,160,220,.055) 1px,transparent 1px);
+  background-size:50px 50px;animation:meshpan 24s linear infinite;
+  -webkit-mask-image:radial-gradient(ellipse 92% 68% at 50% 42%,#000,transparent 86%);mask-image:radial-gradient(ellipse 92% 68% at 50% 42%,#000,transparent 86%)}
+.ambient .blob{position:absolute;border-radius:50%;filter:blur(72px)}
+.ambient .b1{width:54vw;height:54vw;left:-14vw;top:12vh;background:radial-gradient(circle,rgba(124,58,237,.17),transparent 62%);animation:drift1 30s ease-in-out infinite alternate}
+.ambient .b2{width:48vw;height:48vw;right:-12vw;top:54vh;background:radial-gradient(circle,rgba(16,150,220,.15),transparent 62%);animation:drift2 38s ease-in-out infinite alternate}
+.ambient .scan{position:absolute;left:0;right:0;top:-200px;height:200px;
+  background:linear-gradient(rgba(94,234,245,0),rgba(94,234,245,.05),rgba(94,234,245,0));animation:scanpage 12s linear infinite}
+@keyframes meshpan{to{background-position:50px 50px}}
+@keyframes drift1{to{transform:translate(70px,44px) scale(1.16)}}
+@keyframes drift2{to{transform:translate(-56px,-34px) scale(1.12)}}
+@keyframes scanpage{0%{top:-200px}100%{top:100%}}
+.hero{z-index:2}
+main,footer{position:relative;z-index:1}
+
 /* ───────── hero ───────── */
 .hero{position:relative;height:clamp(700px,100svh,980px);overflow:hidden;
   background:radial-gradient(ellipse 55% 50% at 60% 46%,#0C1030 0%,#070917 45%,var(--bg) 80%)}
@@ -149,6 +167,24 @@ h2{font:600 clamp(28px,3.8vw,46px)/1.08 var(--display);letter-spacing:-.035em;ma
 .chip.h{color:var(--amber);border-color:rgba(255,176,72,.4);background:rgba(255,176,72,.1)}
 .chip.m{color:var(--cyan);border-color:rgba(94,234,245,.35);background:rgba(94,234,245,.08)}
 
+/* ── malware dossiers (distinct from threat cards) ── */
+.dossiers{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:14px}
+.dos{border:1px solid var(--line);border-radius:14px;overflow:hidden;background:rgba(8,10,19,.66);position:relative;transition:transform .2s,border-color .2s}
+.dos::after{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--sv);box-shadow:0 0 14px -1px var(--sv)}
+.dos:hover{transform:translateY(-2px);border-color:var(--line-2)}
+.dos .hd{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:13px 16px;border-bottom:1px solid var(--line);background:linear-gradient(90deg,color-mix(in srgb,var(--sv) 13%,transparent),transparent 72%)}
+.dos .hl{display:flex;flex-direction:column;gap:5px}
+.dos .id{font:500 10px/1 var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--sv)}
+.dos h3{font:600 18px/1 var(--display);margin:0;letter-spacing:-.01em}
+.dos .sev{font:600 10px/1 var(--mono);letter-spacing:.11em;text-transform:uppercase;color:var(--sv);white-space:nowrap}
+.dos .bd{padding:15px 16px 16px}
+.dos .bd > p{margin:0 0 13px;color:var(--muted);font-size:13.5px;line-height:1.5}
+.dos .kv{display:grid;grid-template-columns:auto minmax(0,1fr);gap:8px 12px;font:12px/1.5 var(--mono)}
+.dos .kv b{font:500 10px/1.6 var(--mono);letter-spacing:.08em;text-transform:uppercase;font-weight:500}
+.dos .kv b.s{color:var(--amber)}
+.dos .kv b.c{color:var(--cyan)}
+.dos .kv span{color:#B9C0D6}
+
 /* ── security stack ── */
 .stackgrid{border:1px solid var(--line);border-radius:18px;overflow:hidden;background:var(--glass);
   backdrop-filter:blur(16px) saturate(140%);-webkit-backdrop-filter:blur(16px) saturate(140%)}
@@ -209,6 +245,8 @@ footer .wrap{display:flex;justify-content:space-between;gap:12px 24px;flex-wrap:
 </head>
 <body>
 
+<div class="ambient" aria-hidden="true"><div class="mesh"></div><div class="blob b1"></div><div class="blob b2"></div><div class="scan"></div></div>
+
 <header class="hero" id="top">
   <canvas id="scene" aria-hidden="true"></canvas>
   <div class="hero-ui">
@@ -238,7 +276,7 @@ footer .wrap{display:flex;justify-content:space-between;gap:12px 24px;flex-wrap:
     <div class="copy">
       <p class="eyebrow" id="eyebrow" aria-label="Network defense, rendered live">Network defense, rendered live</p>
       <h1><span class="w" style="animation-delay:.05s">Every</span> <span class="w" style="animation-delay:.12s">flash</span> <span class="w" style="animation-delay:.19s">is</span> <span class="w" style="animation-delay:.26s">an</span> <span class="w" style="animation-delay:.33s"><em>attack</em></span> <span class="w" style="animation-delay:.40s">that</span> <span class="w" style="animation-delay:.47s">didn’t</span> <span class="w" style="animation-delay:.54s">land.</span></h1>
-      <p class="lede">A field guide to defending a modern network — the <span class="c">vulnerabilities</span> attackers hunt, the tooling that catches them, and the <span class="r">playbook</span> for the ones that get through.</p>
+      <p class="lede">Security operations, made visible. How a network gets <span class="r">attacked</span>, how those attacks get <span class="c">caught</span>, and what happens when one slips past.</p>
     </div>
 
     <div class="hud glass" role="group" aria-label="Live counters (simulated)">
@@ -255,10 +293,10 @@ footer .wrap{display:flex;justify-content:space-between;gap:12px 24px;flex-wrap:
     <div class="wrap">
       <p class="kicker">The threat landscape</p>
       <h2>Where attackers get in.</h2>
-      <p class="intro">Most breaches don't start with a Hollywood zero-day. They start with something already broken and left unwatched. These are the vulnerability classes that show up first — and how defenders close each one.</p>
+      <p class="intro">Most breaches don't start with a Hollywood zero-day. They start with something already broken and left unwatched. These are the vulnerability classes that show up first, and how defenders close each one.</p>
       <div class="cards">
         <div class="card glass"><div class="top"><h3>Unpatched services</h3><span class="chip c">Critical</span></div><p class="desc">Known CVEs in internet-facing software are the most common way in. Attackers scan for newly disclosed flaws within hours.</p><div class="row fix"><b>Remediate</b><span>Risk-based patch SLAs, external attack-surface scanning, virtual patching at the WAF.</span></div></div>
-        <div class="card glass"><div class="top"><h3>Weak &amp; reused credentials</h3><span class="chip h">High</span></div><p class="desc">Default, guessable, or previously breached passwords let an attacker walk in the front door — no exploit required.</p><div class="row fix"><b>Remediate</b><span>Phishing-resistant MFA, password-manager rollout, breached-credential monitoring.</span></div></div>
+        <div class="card glass"><div class="top"><h3>Weak &amp; reused credentials</h3><span class="chip h">High</span></div><p class="desc">Default, guessable, or previously breached passwords let an attacker walk in the front door. No exploit required.</p><div class="row fix"><b>Remediate</b><span>Phishing-resistant MFA, password-manager rollout, breached-credential monitoring.</span></div></div>
         <div class="card glass"><div class="top"><h3>Misconfiguration</h3><span class="chip h">High</span></div><p class="desc">Open cloud storage, exposed admin panels, and permissive security groups leak data without anyone attacking anything.</p><div class="row fix"><b>Remediate</b><span>CIS benchmarks, infrastructure-as-code scanning, continuous config-drift detection.</span></div></div>
         <div class="card glass"><div class="top"><h3>Injection flaws</h3><span class="chip c">Critical</span></div><p class="desc">Untrusted input reaching a database, shell, or template lets an attacker run their own logic on your server.</p><div class="row fix"><b>Remediate</b><span>Parameterized queries, strict input validation, least-privilege service accounts.</span></div></div>
         <div class="card glass"><div class="top"><h3>Weak transport security</h3><span class="chip m">Medium</span></div><p class="desc">Traffic on legacy TLS or plain HTTP can be read or altered in transit on any shared network path.</p><div class="row fix"><b>Remediate</b><span>Enforce TLS 1.3, HSTS, modern cipher suites; retire deprecated protocols.</span></div></div>
@@ -271,14 +309,38 @@ footer .wrap{display:flex;justify-content:space-between;gap:12px 24px;flex-wrap:
     <div class="wrap">
       <p class="kicker">Malicious software</p>
       <h2>Know the family, know the fix.</h2>
-      <p class="intro">Malware isn't one thing. Each family behaves differently on a host and on the wire, which means each leaves a different fingerprint — and calls for a different containment move.</p>
-      <div class="cards">
-        <div class="card glass"><div class="top"><h3>Ransomware</h3><span class="chip c">Critical</span></div><p class="desc">Encrypts files and demands payment. Modern strains steal data first, then threaten to leak it — double extortion.</p><div class="row"><b>Signal</b><span>Mass file-rename bursts, shadow-copy deletion, spikes in encryption activity.</span></div><div class="row fix"><b>Contain</b><span>Isolate host, disable accounts, restore from offline backups.</span></div></div>
-        <div class="card glass"><div class="top"><h3>Trojan / loader</h3><span class="chip h">High</span></div><p class="desc">Poses as legitimate software to gain a foothold, then quietly pulls down heavier payloads.</p><div class="row"><b>Signal</b><span>Unexpected child processes, first-seen outbound domains.</span></div><div class="row fix"><b>Contain</b><span>Quarantine the binary, block command-and-control, hunt for persistence.</span></div></div>
-        <div class="card glass"><div class="top"><h3>Worm</h3><span class="chip h">High</span></div><p class="desc">Self-propagates across the network by abusing a vulnerability — no user action needed to spread.</p><div class="row"><b>Signal</b><span>Lateral SMB/RDP spikes, identical processes across many hosts.</span></div><div class="row fix"><b>Contain</b><span>Segment the network, patch the exploited service, close the port.</span></div></div>
-        <div class="card glass"><div class="top"><h3>Rootkit</h3><span class="chip c">Critical</span></div><p class="desc">Hides in the kernel or firmware to survive reboots and stay invisible to normal tools.</p><div class="row"><b>Signal</b><span>Integrity-check mismatches, hidden processes, unsigned drivers.</span></div><div class="row fix"><b>Contain</b><span>Offline forensic imaging, then rebuild from known-good media.</span></div></div>
-        <div class="card glass"><div class="top"><h3>Infostealer</h3><span class="chip h">High</span></div><p class="desc">Harvests saved credentials, session cookies, and keystrokes and ships them back to the operator.</p><div class="row"><b>Signal</b><span>Access to browser credential stores, large outbound uploads.</span></div><div class="row fix"><b>Contain</b><span>Force credential rotation, revoke active session tokens.</span></div></div>
-        <div class="card glass"><div class="top"><h3>Botnet agent</h3><span class="chip m">Medium</span></div><p class="desc">Enrolls the host into a remote-controlled network used for DDoS, spam, or proxying.</p><div class="row"><b>Signal</b><span>Beaconing at fixed intervals to known infrastructure.</span></div><div class="row fix"><b>Contain</b><span>Sinkhole the domain, remove the agent, block egress.</span></div></div>
+      <p class="intro">Malware isn't one thing. Each family behaves differently on a host and on the wire, which means each leaves a different fingerprint and calls for a different containment move.</p>
+      <div class="dossiers">
+        <article class="dos" style="--sv:var(--red)">
+          <div class="hd"><div class="hl"><span class="id">MAL-01</span><h3>Ransomware</h3></div><span class="sev">Critical</span></div>
+          <div class="bd"><p>Encrypts files and demands payment. Modern strains steal data first, then threaten to leak it, which is double extortion.</p>
+            <div class="kv"><b class="s">Signal</b><span>Mass file-rename bursts, shadow-copy deletion, spikes in encryption activity.</span><b class="c">Contain</b><span>Isolate host, disable accounts, restore from offline backups.</span></div></div>
+        </article>
+        <article class="dos" style="--sv:var(--amber)">
+          <div class="hd"><div class="hl"><span class="id">MAL-02</span><h3>Trojan / Loader</h3></div><span class="sev">High</span></div>
+          <div class="bd"><p>Poses as legitimate software to gain a foothold, then quietly pulls down heavier payloads.</p>
+            <div class="kv"><b class="s">Signal</b><span>Unexpected child processes, first-seen outbound domains.</span><b class="c">Contain</b><span>Quarantine the binary, block command-and-control, hunt for persistence.</span></div></div>
+        </article>
+        <article class="dos" style="--sv:var(--amber)">
+          <div class="hd"><div class="hl"><span class="id">MAL-03</span><h3>Worm</h3></div><span class="sev">High</span></div>
+          <div class="bd"><p>Self-propagates across the network by abusing a vulnerability, with no user action needed to spread.</p>
+            <div class="kv"><b class="s">Signal</b><span>Lateral SMB/RDP spikes, identical processes across many hosts.</span><b class="c">Contain</b><span>Segment the network, patch the exploited service, close the port.</span></div></div>
+        </article>
+        <article class="dos" style="--sv:var(--red)">
+          <div class="hd"><div class="hl"><span class="id">MAL-04</span><h3>Rootkit</h3></div><span class="sev">Critical</span></div>
+          <div class="bd"><p>Hides in the kernel or firmware to survive reboots and stay invisible to normal tools.</p>
+            <div class="kv"><b class="s">Signal</b><span>Integrity-check mismatches, hidden processes, unsigned drivers.</span><b class="c">Contain</b><span>Offline forensic imaging, then rebuild from known-good media.</span></div></div>
+        </article>
+        <article class="dos" style="--sv:var(--amber)">
+          <div class="hd"><div class="hl"><span class="id">MAL-05</span><h3>Infostealer</h3></div><span class="sev">High</span></div>
+          <div class="bd"><p>Harvests saved credentials, session cookies, and keystrokes and ships them back to the operator.</p>
+            <div class="kv"><b class="s">Signal</b><span>Access to browser credential stores, large outbound uploads.</span><b class="c">Contain</b><span>Force credential rotation, revoke active session tokens.</span></div></div>
+        </article>
+        <article class="dos" style="--sv:var(--cyan)">
+          <div class="hd"><div class="hl"><span class="id">MAL-06</span><h3>Botnet Agent</h3></div><span class="sev">Medium</span></div>
+          <div class="bd"><p>Enrolls the host into a remote-controlled network used for DDoS, spam, or proxying.</p>
+            <div class="kv"><b class="s">Signal</b><span>Beaconing at fixed intervals to known infrastructure.</span><b class="c">Contain</b><span>Sinkhole the domain, remove the agent, block egress.</span></div></div>
+        </article>
       </div>
     </div>
   </section>
@@ -287,7 +349,7 @@ footer .wrap{display:flex;justify-content:space-between;gap:12px 24px;flex-wrap:
     <div class="wrap">
       <p class="kicker">The security operations stack</p>
       <h2>The tools that watch, catch, and respond.</h2>
-      <p class="intro">Defense in depth is only as good as what you can see. These are the layers of tooling a security team runs — from the firewall at the edge to automation that reacts in milliseconds.</p>
+      <p class="intro">Defense in depth is only as good as what you can see. These are the layers of tooling a security team runs, from the firewall at the edge to automation that reacts in milliseconds.</p>
       <div class="stackgrid">
         <div class="tool">
           <div class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#5EEAF5" stroke-width="1.6"><path d="M3 5h18M3 12h18M3 19h18M8 5v7M16 5v7M12 12v7"/></svg></div>
@@ -373,12 +435,12 @@ footer .wrap{display:flex;justify-content:space-between;gap:12px 24px;flex-wrap:
     <div class="wrap">
       <p class="kicker">Incident response</p>
       <h2>When something gets through.</h2>
-      <p class="intro">Detection is the start, not the end. This is the six-phase lifecycle (NIST 800-61 / SANS) that turns a 3 a.m. alert into a closed, documented case — calm, sequenced, evidence-first.</p>
+      <p class="intro">Detection is the start, not the end. This is the six-phase lifecycle (NIST 800-61 / SANS) that turns a 3 a.m. alert into a closed, documented case. Calm, sequenced, evidence-first.</p>
       <div class="ir">
         <div class="s" style="--i:1"><div class="no">01</div><h3>Preparation</h3><p>Build the plan, tooling, and runbooks before anything happens. Everyone knows their role.</p></div>
         <div class="s" style="--i:2"><div class="no">02</div><h3>Identification</h3><p>Detect and confirm the incident, then scope it: which hosts, accounts, and data are touched?</p></div>
         <div class="s" style="--i:3"><div class="no">03</div><h3>Containment</h3><p>Stop the bleeding. Isolate hosts and revoke access without destroying evidence.</p></div>
-        <div class="s" style="--i:4"><div class="no">04</div><h3>Eradication</h3><p>Remove the foothold — malware, persistence, and the vulnerability that allowed it.</p></div>
+        <div class="s" style="--i:4"><div class="no">04</div><h3>Eradication</h3><p>Remove the foothold: malware, persistence, and the vulnerability that allowed it.</p></div>
         <div class="s" style="--i:5"><div class="no">05</div><h3>Recovery</h3><p>Restore clean systems, watch them closely, and confirm the threat is gone before reconnecting.</p></div>
         <div class="s" style="--i:6"><div class="no">06</div><h3>Lessons learned</h3><p>Write the blameless postmortem, close the gaps, and update detections so it can't recur.</p></div>
       </div>
@@ -389,7 +451,7 @@ footer .wrap{display:flex;justify-content:space-between;gap:12px 24px;flex-wrap:
     <div class="wrap">
       <p class="kicker">Digital forensics</p>
       <h2>Collect it before it's gone.</h2>
-      <p class="intro">Evidence has a shelf life. The order of volatility (RFC 3227) dictates what a responder captures first — you image the things that vanish on reboot before you ever touch the disk.</p>
+      <p class="intro">Evidence has a shelf life. The order of volatility (RFC 3227) dictates what a responder captures first. You image the things that vanish on reboot before you ever touch the disk.</p>
       <div class="dfir">
         <ol class="vol glass">
           <li><span class="rank">1</span><span class="name">CPU registers &amp; cache</span><span class="life">nanoseconds</span></li>
@@ -409,7 +471,7 @@ footer .wrap{display:flex;justify-content:space-between;gap:12px 24px;flex-wrap:
             <span class="art">Registry / plist</span>
             <span class="art">Browser &amp; auth artifacts</span>
           </div>
-          <p class="coc">Every item is hashed with <b>SHA-256</b>, documented, and access-logged from seizure to analysis. That unbroken <b>chain of custody</b> is what lets the findings stand up — in a report, or in court.</p>
+          <p class="coc">Every item is hashed with <b>SHA-256</b>, documented, and access-logged from seizure to analysis. That unbroken <b>chain of custody</b> is what lets the findings stand up, in a report or in court.</p>
         </div>
       </div>
     </div>
@@ -523,19 +585,35 @@ function buildStars(){
 }
 
 /* ───────── simulation ───────── */
-const CATS = [
-  { name:"Credential stuffing", layer:"Identity", act:"Challenged", col:"red",   w:3 },
-  { name:"Port sweep",          layer:"Edge",     act:"Dropped",    col:"amber", w:3 },
-  { name:"Exploit probe",       layer:"WAF",      act:"Blocked",    col:"red",   w:2.5 },
-  { name:"Brute-force login",   layer:"Identity", act:"Locked out", col:"amber", w:2 },
-  { name:"Botnet beacon",       layer:"Endpoint", act:"Sinkholed",  col:"red",   w:1.5 },
-  { name:"Malicious domain",    layer:"DNS",      act:"Denied",     col:"amber", w:1.5 },
-  { name:"Exfiltration attempt",layer:"DLP",      act:"Stopped",    col:"red",   w:.6 },
+const rip = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
+const pk = a => a[Math.floor(Math.random() * a.length)];
+// documentation IP ranges only (RFC 5737), never real addresses
+const ipDoc = () => `${pk(["203.0.113", "198.51.100", "192.0.2"])}.${rip(2, 250)}`;
+const USERS = ["j.reyes", "a.okafor", "m.singh", "k.novak", "d.costa", "l.park", "svc_backup", "svc_deploy", "helpdesk", "contractor"];
+const HOSTS = ["web-03", "api-07", "db-02", "vpn-01", "fs-04", "wks-118", "mail-01", "k8s-node-6", "dc-02", "jump-01"];
+const GEO = ["Frankfurt", "São Paulo", "Singapore", "Ashburn", "Mumbai", "Seoul", "Lagos", "Warsaw", "Sydney", "Toronto", "Jakarta", "Dublin", "Osaka", "Nairobi", "Reston"];
+// col: red = high/critical, amber = medium, cyan = informational / allowed
+const EVENTS = [
+  { n:"Credential stuffing", d:()=>`${ipDoc()} vs ${rip(40,900)} accts`,               a:"Challenged",      l:"Identity",  c:"red",   w:3 },
+  { n:"Port scan",           d:()=>`${ipDoc()} → ${pk(["22","443","3389","445","1433","8080"])}/tcp`, a:"Dropped", l:"Edge", c:"amber", w:3 },
+  { n:"Exploit probe",       d:()=>`${ipDoc()} → ${pk(HOSTS)}`,                          a:"Blocked at WAF",  l:"Perimeter", c:"red",   w:2.6 },
+  { n:"Brute-force login",   d:()=>`user ${pk(USERS)}`,                                  a:"Locked out",      l:"Identity",  c:"amber", w:2.2 },
+  { n:"Impossible travel",   d:()=>`${pk(USERS)} · ${pk(GEO)} to ${pk(GEO)}`,           a:"Session revoked", l:"Identity",  c:"red",   w:1.5 },
+  { n:"Malware attachment",  d:()=>`inbound to ${pk(USERS)}`,                            a:"Quarantined",     l:"Email",     c:"red",   w:1.9 },
+  { n:"C2 beacon",           d:()=>`${pk(HOSTS)} · ${pk(["30","60","300"])}s interval`, a:"Sinkholed",       l:"Endpoint",  c:"red",   w:1.5 },
+  { n:"Malicious domain",    d:()=>`DNS from ${pk(HOSTS)}`,                              a:"Denied",          l:"DNS",       c:"amber", w:1.9 },
+  { n:"Suspicious process",  d:()=>`${pk(HOSTS)} · encoded command`,                    a:"Killed",          l:"EDR",       c:"red",   w:1.6 },
+  { n:"Web shell upload",    d:()=>`${ipDoc()} → ${pk(HOSTS)}`,                          a:"Blocked",         l:"Perimeter", c:"red",   w:1.1 },
+  { n:"Data exfil attempt",  d:()=>`${pk(HOSTS)} · ${rip(2,180)} MB`,                    a:"Stopped",         l:"DLP",       c:"red",   w:.9 },
+  { n:"Scanner fingerprint", d:()=>`${ipDoc()} · ${pk(["nikto","nuclei","zgrab","masscan"])}`, a:"Reputation block", l:"Edge", c:"amber", w:2 },
+  { n:"TLS downgrade",       d:()=>`${ipDoc()}`,                                         a:"Rejected",        l:"Edge",      c:"amber", w:1.2 },
+  { n:"New device sign-in",  d:()=>`${pk(USERS)} · ${pk(GEO)}`,                          a:"MFA passed",      l:"Identity",  c:"cyan",  w:1.7 },
+  { n:"Patch deployed",      d:()=>`${pk(HOSTS)}`,                                       a:"Verified",        l:"Fleet",     c:"cyan",  w:1.3 },
+  { n:"Backup snapshot",     d:()=>`${pk(HOSTS)}`,                                       a:"Integrity OK",    l:"Data",      c:"cyan",  w:1.1 },
+  { n:"Certificate renewed", d:()=>`${pk(HOSTS)}`,                                       a:"Rotated",         l:"PKI",       c:"cyan",  w:.9 },
 ];
-const WAVE = { name:"Volumetric burst", layer:"Edge", act:"Absorbed", col:"red" };
-const REGIONS = ["Frankfurt","São Paulo","Singapore","Ashburn","Mumbai","Seoul","Lagos","Warsaw","Sydney","Toronto","Jakarta","Istanbul","Santiago","Osaka","Nairobi"];
-const CAT_TOTAL = CATS.reduce((s,c) => s+c.w, 0);
-function pickCat(){ let r = Math.random()*CAT_TOTAL; for (const c of CATS){ if ((r -= c.w) <= 0) return c; } return CATS[0]; }
+const EV_TOTAL = EVENTS.reduce((s, e) => s + e.w, 0);
+function pickEvent(){ let r = Math.random() * EV_TOTAL; for (const e of EVENTS){ if ((r -= e.w) <= 0) return e; } return EVENTS[0]; }
 
 const threats = [], ripples = [], sparks = [], flashing = new Set();
 let t = 0, spin = 0, ax = -.32, yaw = 0, tiltT = -.32, yawT = 0, hudRot = 0, shieldPulse = 0;
@@ -546,20 +624,20 @@ const stats = { blocked: 1284907, passed: 48211590 };
 function randDir(){
   for (;;){ const v = randUnit(); v[1] *= .8; if (v[2] < .4) return norm(v); }
 }
-function spawn(dir, hostile, cat, speedMul = 1){
+function spawn(dir, hostile, waveHit = false, speedMul = 1){
   const dist = R * rand(5, 6.5);
   const p = [dir[0]*dist, dir[1]*dist, dir[2]*dist];
   const tgt = norm([dir[0]+rand(-.45,.45), dir[1]+rand(-.45,.45), dir[2]+rand(-.45,.45)]).map(c => c*R*.85);
   const sp = R * rand(2.4, 3.8) * speedMul;
   const v = norm([tgt[0]-p[0], tgt[1]-p[1], tgt[2]-p[2]]).map(c => c*sp);
-  threats.push({ p, v, hostile, cat, col: hostile ? cat.col : "cyan", trail: [], crossed: false, dead: false });
+  threats.push({ p, v, hostile, wave: waveHit, col: hostile ? "red" : "cyan", trail: [], crossed: false, dead: false });
 }
 function addRipple(n, col, life, s){ const [u, v] = basis(n); ripples.push({ n, u, v, col, t: 0, life, s }); }
 
 function impact(th){
   const n = norm(th.p);
   addRipple(n, th.col, 1.25, 1);
-  const cnt = th.cat === WAVE ? 7 : 13;
+  const cnt = th.wave ? 7 : 13;
   for (let i = 0; i < cnt; i++){
     const rv = randUnit(), d = dot(rv, n);
     const tv = [rv[0]-n[0]*d, rv[1]-n[1]*d, rv[2]-n[2]*d];
@@ -569,7 +647,7 @@ function impact(th){
   shieldPulse = Math.min(.22, shieldPulse + .05);
   stats.blocked += Math.round(rand(38, 190));
   recent.push(t);
-  if (t - lastFeed > .42){ lastFeed = t; addFeed(th.cat); }
+  if (t - lastFeed > .5){ lastFeed = t; addFeed(); }
 }
 function coreHit(th){
   const n = norm(th.p);
@@ -594,7 +672,7 @@ function update(dt){
   nextSpawn -= dt;
   if (nextSpawn <= 0){
     const hostile = Math.random() > .24;
-    spawn(randDir(), hostile, hostile ? pickCat() : null);
+    spawn(randDir(), hostile);
     nextSpawn = -Math.log(1 - Math.random()) / 3;
   }
   nextWave -= dt;
@@ -603,7 +681,7 @@ function update(dt){
     wave.cd -= dt;
     if (wave.cd <= 0){
       const d = norm([wave.dir[0]+rand(-.14,.14), wave.dir[1]+rand(-.14,.14), wave.dir[2]+rand(-.14,.14)]);
-      spawn(d, true, WAVE, 1.25);
+      spawn(d, true, true, 1.25);
       wave.cd = rand(.05, .11);
       if (--wave.left <= 0) wave = null;
     }
@@ -787,25 +865,44 @@ const $ = id => document.getElementById(id);
 const fmt = n => n.toLocaleString("en-US");
 const two = n => String(n).padStart(2, "0");
 function clock(){ const d = new Date(); return `${two(d.getHours())}:${two(d.getMinutes())}:${two(d.getSeconds())}.${String(d.getMilliseconds()).padStart(3,"0")}`; }
-function addFeed(cat){
+const FEED_COL = { red:"var(--red)", amber:"var(--amber)", cyan:"var(--cyan)" };
+let lastFeedName = "";
+function addFeed(){
+  let e = pickEvent(), guard = 0;
+  while (e.n === lastFeedName && guard++ < 5) e = pickEvent();
+  lastFeedName = e.n;
   const li = document.createElement("li");
-  li.style.setProperty("--c", cat.col === "amber" ? "var(--amber)" : "var(--red)");
-  const region = REGIONS[Math.floor(Math.random()*REGIONS.length)];
-  li.innerHTML = `<time>${clock()}</time><span class="what"><i></i>${cat.name}</span><span class="how">${region} → <b>${cat.act}</b> · ${cat.layer}</span>`;
+  li.style.setProperty("--c", FEED_COL[e.c]);
+  li.innerHTML = `<time>${clock()}</time><span class="what"><i></i>${e.n}</span><span class="how">${e.d()} · <b>${e.a}</b> · ${e.l}</span>`;
   feedEl.prepend(li);
   while (feedEl.children.length > 8) feedEl.lastElementChild.remove();
 }
-let hudT = 0;
+// HUD: counters stay lively, but the threat level is smoothed with hysteresis so it holds steady.
+const TIERS = [["Guarded","var(--cyan)",22],["Elevated","var(--amber)",58],["Severe","var(--red)",90]];
+let hudT = 0, slowT = 0, lvlEMA = 1, lvlTier = -1;
 function hud(dt){
-  hudT -= dt; if (hudT > 0) return; hudT = .12;
+  hudT -= dt; if (hudT > 0) return; hudT = .5;
   $("c-blocked").textContent = fmt(stats.blocked);
   $("c-passed").textContent = fmt(stats.passed);
-  $("c-lat").textContent = (3.4 + Math.random()*.9 + (wave ? 1.1 : 0)).toFixed(1);
+
   const rate = recent.length / 8;
-  $("rate").textContent = `${rate.toFixed(1)} / s`;
-  const [lab, col] = rate < 2.2 ? ["Guarded", "var(--cyan)"] : rate < 3.4 ? ["Elevated", "var(--amber)"] : ["Severe", "var(--red)"];
-  $("c-level").textContent = lab;
-  const bar = $("lvlbar"); bar.style.width = `${Math.min(100, 12 + rate/4.5*88)}%`; bar.style.setProperty("--lc", col);
+  lvlEMA += (rate - lvlEMA) * .1;            // heavy smoothing
+  let tier = lvlTier < 0 ? 0 : lvlTier;      // hysteresis: wide gap between up/down thresholds
+  if (tier === 0 && lvlEMA > 2.7) tier = 1;
+  else if (tier === 1){ if (lvlEMA > 3.9) tier = 2; else if (lvlEMA < 2.0) tier = 0; }
+  else if (tier === 2 && lvlEMA < 3.2) tier = 1;
+  if (tier !== lvlTier){
+    lvlTier = tier;
+    const [lab, col, w] = TIERS[tier];
+    $("c-level").textContent = lab;
+    const bar = $("lvlbar"); bar.style.width = w + "%"; bar.style.setProperty("--lc", col);
+  }
+
+  slowT -= .5; if (slowT <= 0){          // latency + rate refresh slowly, no per-frame jitter
+    slowT = 2;
+    $("c-lat").textContent = (3.5 + Math.random()*.7 + (wave ? 1.2 : 0)).toFixed(1);
+    $("rate").textContent = `${Math.round(rate)} / s`;
+  }
 }
 
 /* ───────── eyebrow decode ───────── */
